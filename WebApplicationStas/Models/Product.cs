@@ -17,9 +17,13 @@ public partial class Product
 
     public string? ImageUrl { get; set; }
 
+    public int StockQuantity { get; set; }
+
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
     public virtual Category Category { get; set; } = null!;
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+    public virtual ICollection<ProductReservation> ProductReservations { get; set; } = new List<ProductReservation>();
 }

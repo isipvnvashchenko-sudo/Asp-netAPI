@@ -27,6 +27,8 @@ public partial class ShopdbContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<ProductReservation> ProductReservations { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -121,6 +123,19 @@ public partial class ShopdbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC070FFB5B36");
 
             entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<ProductReservation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_ProductReservations");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductReservations)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK_ProductReservations_Products");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ProductReservations)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_ProductReservations_Users");
         });
 
         modelBuilder.Entity<User>(entity =>

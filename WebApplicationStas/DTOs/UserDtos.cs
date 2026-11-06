@@ -1,5 +1,11 @@
 ﻿namespace WebApplicationStas.DTOs;
 
+public class UserShortDto
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = string.Empty;
+}
+
 public class UserDto
 {
     public int Id { get; set; }
@@ -7,6 +13,7 @@ public class UserDto
     public string? Email { get; set; }
     public bool IsActive { get; set; }
     public int? RoleId { get; set; }
+    public RoleShortDto? Role { get; set; }
 }
 
 public class CreateUserDto

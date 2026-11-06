@@ -6,6 +6,7 @@ public class CartItemDto
     public int CartId { get; set; }
     public int ProductId { get; set; }
     public int Quantity { get; set; }
+    public ProductShortDto Product { get; set; } = null!;
 }
 
 public class CreateCartItemDto

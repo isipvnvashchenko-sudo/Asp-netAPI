@@ -3,9 +3,11 @@
 public class CartDto
 {
     public int Id { get; set; }
-    public int UserId { get; set; }
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; }
+    public int UserId { get; set; }
+    public UserShortDto User { get; set; } = null!;
+    public List<CartItemDto> Items { get; set; } = new();
 }
 
 public class CreateCartDto
