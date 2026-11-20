@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApplicationStas.DTOs;
 using WebApplicationStas.Services;
 
@@ -31,6 +32,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryDto dto)
     {
         var created = await _service.CreateAsync(dto);
@@ -38,6 +40,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto dto)
     {
         var updated = await _service.UpdateAsync(id, dto);
@@ -45,6 +48,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPatch("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Patch(int id, [FromBody] PatchCategoryDto dto)
     {
         var patched = await _service.PatchAsync(id, dto);
@@ -52,6 +56,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Delete(int id)
     {
         return await _service.DeleteAsync(id) ? NoContent() : NotFound();

@@ -13,3 +13,10 @@ public class BusinessRuleException : Exception
     {
     }
 }
+
+public class AccountDisabledException : Exception
+{
+    public AccountDisabledException(string message) : base(message)
+    {
+    }
+}

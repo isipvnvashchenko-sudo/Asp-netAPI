@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApplicationStas.DTOs;
 using WebApplicationStas.Services;
 
@@ -16,6 +17,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<RoleDto>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var result = await _service.GetPagedAsync(page, pageSize);
@@ -24,6 +26,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize]
     public async Task<ActionResult<RoleDto>> GetById(int id)
     {
         var role = await _service.GetByIdAsync(id);
@@ -31,6 +34,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<RoleDto>> Create([FromBody] CreateRoleDto dto)
     {
         var created = await _service.CreateAsync(dto);
@@ -38,6 +42,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateRoleDto dto)
     {
         var updated = await _service.UpdateAsync(id, dto);
@@ -45,6 +50,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPatch("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Patch(int id, [FromBody] PatchRoleDto dto)
     {
         var patched = await _service.PatchAsync(id, dto);
@@ -52,6 +58,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Delete(int id)
     {
         return await _service.DeleteAsync(id) ? NoContent() : NotFound();

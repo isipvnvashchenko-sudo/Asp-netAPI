@@ -10,6 +10,7 @@ public interface IReservationService
 {
     Task<PagedResult<ReservationDto>> GetPagedAsync(int page, int pageSize);
     Task<ReservationDto?> GetByIdAsync(int id);
+    Task<ProductReservation?> GetEntityAsync(int id);
     Task<ReservationDto> ReserveAsync(CreateReservationDto dto);
     Task<ReservationDto?> ReleaseAsync(int reservationId);
 }
@@ -46,6 +47,8 @@ public class ReservationService : IReservationService
         var reservation = await _reservations.GetByIdAsync(id, "User", "Product");
         return reservation == null ? null : _mapper.Map<ReservationDto>(reservation);
     }
+
+    public Task<ProductReservation?> GetEntityAsync(int id) => _reservations.GetByIdAsync(id);
 
     public async Task<ReservationDto> ReserveAsync(CreateReservationDto dto)
     {

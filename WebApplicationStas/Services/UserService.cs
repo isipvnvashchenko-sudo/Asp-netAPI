@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using WebApplicationStas.DTOs;
 using WebApplicationStas.Models;
 using WebApplicationStas.Repositories;
@@ -9,20 +10,23 @@ public interface IUserService
 {
     Task<PagedResult<UserDto>> GetPagedAsync(int page, int pageSize);
     Task<UserDto?> GetByIdAsync(int id);
+    Task<User?> GetEntityAsync(int id);
     Task<UserDto> CreateAsync(CreateUserDto dto);
     Task<UserDto?> UpdateAsync(int id, UpdateUserDto dto);
-    Task<UserDto?> PatchAsync(int id, PatchUserDto dto);
+    Task<UserDto?> PatchAsync(int id, PatchUserDto dto, bool allowRoleChange);
     Task<bool> DeleteAsync(int id);
 }
 
 public class UserService : IUserService
 {
     private readonly IRepository<User> _users;
+    private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IMapper _mapper;
 
-    public UserService(IRepository<User> users, IMapper mapper)
+    public UserService(IRepository<User> users, IPasswordHasher<User> passwordHasher, IMapper mapper)
     {
         _users = users;
+        _passwordHasher = passwordHasher;
         _mapper = mapper;
     }
 
@@ -40,9 +44,12 @@ public class UserService : IUserService
         return user == null ? null : _mapper.Map<UserDto>(user);
     }
 
+    public Task<User?> GetEntityAsync(int id) => _users.GetByIdAsync(id);
+
     public async Task<UserDto> CreateAsync(CreateUserDto dto)
     {
         var user = _mapper.Map<User>(dto);
+        user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
         _users.Add(user);
         await _users.SaveChangesAsync();
 
@@ -57,19 +64,28 @@ public class UserService : IUserService
             return null;
 
         _mapper.Map(dto, user);
+        if (!string.IsNullOrEmpty(dto.Password))
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+
         await _users.SaveChangesAsync();
 
         var updated = await _users.GetByIdAsync(id, "Role");
         return _mapper.Map<UserDto>(updated!);
     }
 
-    public async Task<UserDto?> PatchAsync(int id, PatchUserDto dto)
+    public async Task<UserDto?> PatchAsync(int id, PatchUserDto dto, bool allowRoleChange)
     {
         var user = await _users.GetByIdAsync(id);
         if (user == null)
             return null;
 
+        if (!allowRoleChange)
+            dto.RoleId = null;
+
         _mapper.Map(dto, user);
+        if (!string.IsNullOrEmpty(dto.Password))
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+
         await _users.SaveChangesAsync();
 
         var updated = await _users.GetByIdAsync(id, "Role");

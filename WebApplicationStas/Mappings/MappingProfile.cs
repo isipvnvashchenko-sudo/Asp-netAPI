@@ -58,11 +58,16 @@ public class MappingProfile : Profile
             .ForMember(d => d.StockQuantity, o => o.Condition(s => s.StockQuantity.HasValue))
             .ForMember(d => d.CategoryId, o => o.Condition(s => s.CategoryId.HasValue));
 
-        CreateMap<CreateUserDto, User>();
-        CreateMap<UpdateUserDto, User>();
+        CreateMap<CreateUserDto, User>()
+            .ForMember(d => d.Password, o => o.Ignore())
+            .ForMember(d => d.PasswordHash, o => o.Ignore());
+        CreateMap<UpdateUserDto, User>()
+            .ForMember(d => d.Password, o => o.Ignore())
+            .ForMember(d => d.PasswordHash, o => o.Ignore());
         CreateMap<PatchUserDto, User>()
+            .ForMember(d => d.Password, o => o.Ignore())
+            .ForMember(d => d.PasswordHash, o => o.Ignore())
             .ForMember(d => d.Username, o => o.Condition(s => s.Username != null))
-            .ForMember(d => d.Password, o => o.Condition(s => s.Password != null))
             .ForMember(d => d.Email, o => o.Condition(s => s.Email != null))
             .ForMember(d => d.IsActive, o => o.Condition(s => s.IsActive.HasValue))
             .ForMember(d => d.RoleId, o => o.Condition(s => s.RoleId.HasValue));

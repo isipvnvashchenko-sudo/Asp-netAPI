@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplicationStas.Exceptions;
 
@@ -11,6 +12,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             NotFoundException => (StatusCodes.Status404NotFound, "Ресурс не найден"),
             BusinessRuleException => (StatusCodes.Status409Conflict, "Нарушено бизнес-правило"),
+            DbUpdateException => (StatusCodes.Status409Conflict, "Конфликт данных (нарушение уникальности или связей)"),
             _ => (StatusCodes.Status500InternalServerError, "Внутренняя ошибка сервера")
         };
 

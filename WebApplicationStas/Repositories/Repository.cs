@@ -29,6 +29,12 @@ public class Repository<T> : IRepository<T> where T : class
         return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
     }
 
+    public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, params string[] includes)
+    {
+        var query = Include(_set.AsQueryable(), includes);
+        return await query.FirstOrDefaultAsync(predicate);
+    }
+
     public void Add(T entity) => _set.Add(entity);
 
     public void Remove(T entity) => _set.Remove(entity);

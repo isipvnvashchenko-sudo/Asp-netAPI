@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebApplicationStas.DTOs;
 using WebApplicationStas.Services;
 
@@ -6,13 +7,16 @@ namespace WebApplicationStas.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ReservationsController : ControllerBase
 {
     private readonly IReservationService _service;
+    private readonly IAuthorizationService _authorizationService;
 
-    public ReservationsController(IReservationService service)
+    public ReservationsController(IReservationService service, IAuthorizationService authorizationService)
     {
         _service = service;
+        _authorizationService = authorizationService;
     }
 
     [HttpGet]
@@ -38,8 +42,17 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpPost("{id:int}/release")]
+    [Authorize]
     public async Task<ActionResult<ReservationDto>> Release(int id)
     {
+        var reservation = await _service.GetEntityAsync(id);
+        if (reservation == null)
+            return NotFound();
+
+        var authorization = await _authorizationService.AuthorizeAsync(User, reservation, "SameUserOrAdmin");
+        if (!authorization.Succeeded)
+            return Forbid();
+
         var released = await _service.ReleaseAsync(id);
         return released == null ? NotFound() : Ok(released);
     }
