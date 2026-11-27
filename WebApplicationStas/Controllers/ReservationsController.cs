@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationStas.DTOs;
 using WebApplicationStas.Services;
+using WebApplicationStas.Swagger;
 
 namespace WebApplicationStas.Controllers;
 
@@ -43,6 +44,7 @@ public class ReservationsController : ControllerBase
 
     [HttpPost("{id:int}/release")]
     [Authorize]
+    [SwaggerSecurityInfo("Владелец резервирования или администратор")]
     public async Task<ActionResult<ReservationDto>> Release(int id)
     {
         var reservation = await _service.GetEntityAsync(id);

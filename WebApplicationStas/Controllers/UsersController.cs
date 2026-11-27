@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApplicationStas.DTOs;
 using WebApplicationStas.Models;
 using WebApplicationStas.Services;
+using WebApplicationStas.Swagger;
 
 namespace WebApplicationStas.Controllers;
 
@@ -54,6 +55,7 @@ public class UsersController : ControllerBase
 
     [HttpPatch("{id:int}")]
     [Authorize]
+    [SwaggerSecurityInfo("Владелец ресурса или администратор (свой профиль)")]
     public async Task<IActionResult> Patch(int id, [FromBody] PatchUserDto dto)
     {
         var target = await _service.GetEntityAsync(id);
